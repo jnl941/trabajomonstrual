@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>  
+<head>
+<title>Pokemon Arena</title>
+  <!-- Required meta tags -->
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+  <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP"
+    crossorigin="anonymous"> -->
+  <link rel="stylesheet" href="styles/main.css">
+
+<script type="text/javascript" src="mule-resource/js/mule.js"></script>
+<script type="text/javascript">
+	function callEcho() {
+		var input = {
+				"pokemon1": document.getElementById('txt1').value.toLowerCase(), 
+				"pokemon2": document.getElementById('txt2').value.toLowerCase()
+		}
+	
+		/*var data = [parseFloat(input[0]), parseFloat(input[1])];
+	
+		if (!isNaN(data[0]) || !isNan(data[1])]) {
+			document.getElementById("response").innerHTML = 
+				"<b>Error:</b><br>" + "<span>Valor o formato incorrecto del nombre introducido.</span>";
+			return;
+		}*/
+	
+		mule.rpc("/services/echo", input, callEchoResponse);
+	}
+	
+	function luchar(message) {
+		
+	}
+	function lucharResponse(message) {
+		document.getElementById("response").innerHTML = "<b>Respuesta:</b><br>" + "<span>" + message.data + "</span>";		
+	}
+	function callEchoResponse(message) {
+		document.getElementById("response").innerHTML = "<b>Respuesta:</b><br>" + "<span>" + message.data + "</span>";
+	
+	}
+</script>
+</head>
+<body>
+<span>Introduce el nombre del primer pokemon:</span>
+<input type="text" id="txt1"" />
+<span>Introduce el nombre del segundo pokemon:</span>
+<input type="text" id="txt2"" />
+<button class="buttonForm" onclick="callEcho();">Buscar Pokemons</button>
+<button disabled class="buttonForm" onclick="callEcho();">Enfrentar</button>
+<div id="response"></div>
+ <!-- ////////////////////////////////////////////////////////////////////////////// -->
+
+  <div class="row" style="margin: 1%;">
+    <!-- <div class="col"></div>
+    <div class="col-1">
+      <h5>Name</h5>
+    </div>
+    <div class="col-2 justify-content-md-end">
+      <button id="speaker"><i class="fas fa-volume-down"></i></button>
+      <button id="setting"><i class="fas fa-cogs"></i></button>
+    </div> -->
+  </div>
+
+  <!-- ////////////////////////////////////////////////////////////////////////////// -->
+
+  <!-- Start of Container -->
+  <div class="container p-0">
+    <div class="row ">
+
+      <!-- Start of Left Column -->
+      <div class="col-lg-7 col-sm-8 m-0 p-0">
+
+        <div class="row border border-dark p-0 m-0" id="leftTop">
+          <div class="col-12 m-0 p-0">
+            <div class="row m-0" id="topPadding">
+              <!-- <div class="col">Turn 1</div> -->
+            </div>
+            <div class="row m-0" id="enemyZone">
+              <div class="col-7">
+                <div class="row m-0" id="enemyPokemon1Name"></div>
+                <div class="row m-0" id="enemyPokemon1HealthBar">
+                  <div class="col-6 m-0 p-0">
+                    <div class="health-value" id="e1HP"></div>
+                  </div>
+                  <div class="col-6 m-0 p-0">
+                    <!-- <progress id="enemyPokemon1Health"></progress> -->
+                    <div class="progress active">
+                        <div class="progress-bar" id="enemyPokemon1Health" ></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row m-0" id="enemyPokemonStatusEffect"></div>
+              </div>
+              <div class="col-5" id="enemyPokemon"></div>
+            </div>
+            <div class="row m-0" id="neutralZone">
+              <div class="col-3"></div>
+              <div class="col-3" id="circleStart"></div>
+              <div class="col-3"></div>
+              <div class="col-3"></div>
+            </div>
+            <div class="row m-0" id="playerZone">
+              <div class="col-5" id="playerPokemon"></div>
+              <div class="col-7" id="playerPokemonStatus">
+                <div class="row m-0" id="playerPokemon1Name"></div>
+                <div class="row m-0" id="playerPokemon1HealthBar">
+                  <div class="col-6 m-0 p-0">
+                    <!-- <progress id="playerPokemon1Health"></progress> -->
+                    <div class="progress active">
+                      <div class="progress-bar" id="playerPokemon1Health" ></div>
+                    </div>
+                  </div>
+                  <div class="col-6 m-0 p-0">
+                    <div class="health-value" id="p1HP"></div>
+                  </div>
+                </div>
+                <div class="row m-0" id="playerPokemonStatusEffect"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ////////////////////////////////////////////////////////////////////////////// -->
+
+        <!-- Start of Left Bottom -->
+        <div class="row justify-content-md-center border border-dark m-0 p-0" id="leftBottom">
+
+          <!-- <div class="row">
+            <div class="col-3">
+              <h5>Make a Move</h5>
+            </div>
+            <div class="col-7"></div>
+            <div class="col-2">
+              <p class="border border-dark mt-1" id="num/num">num/num</p>
+            </div>
+          </div> -->
+
+          <div class="row">
+            <h4 style="color:maroon; margin-left: 2%">Movimientos del Pokemon 1</h4>
+            <div class="content">
+            	<h4 id="valorP1" style="color:maroon;">Valor:</h4>
+            </div>
+          </div>
+
+          <!-- Start of Moves -->
+          <div class="row justify-content-md-around m-0 p-0">
+
+            <!-- Move 1 -->
+            <!-- <div class="col"> -->
+            <button disabled id="moveButton1P1" data-toggle="tooltip" data-placement="top" title="Test text" style="width: 25%;">
+              <h6 id="moveName1P1">Movimiento 1</h6>
+              <div class="row justify-content-md-between m-0" style="font-size: .55rem;">
+                <div class="col-4 m-0 p-0" id="moveP1power1">Power</div>
+                <div class="col-4 m-0 p-0" id="moveP1accur1">Accuracy</div>
+              </div>
+            </button>
+            <!-- </div> -->
+
+            <!-- Move 2 -->
+            <!-- <div class="col"> -->
+            <button disabled id="moveButton2P1" data-toggle="tooltip" data-placement="top" title="moveButton2" style="width: 25%;">
+              <h6 id="moveName2P1">Movimiento 2</h6>
+              <div class="row justify-content-md-between m-0" style="font-size: .55rem;">
+                <div class="col-4 m-0 p-0" id="moveP1power2">Power</div>
+                <div class="col-4 m-0 p-0" id="moveP1power2">Accuracy</div>
+              </div>
+            </button>
+            <!-- </div> -->
+
+            <!-- Move 3 -->
+            <!-- <div class="col"> -->
+            <button disabled title="moveButton3P1" data-toggle="tooltip" data-placement="top" title="moveButton3" id="moveButton3"
+              style="width: 25%;">
+              <h6 id="moveName3P1">Movimiento 3</h6>
+              <div class="row justify-content-md-between m-0" style="font-size: .55rem;">
+                <div class="col-4 m-0 p-0" id="moveP1power3">Power</div>
+                <div class="col-4 m-0 p-0" id="moveP1accur3">Accuracy</div>
+              </div>
+            </button>
+            <!-- </div> -->
+
+            <!-- Move 4 -->
+            <!-- <div class="col"> -->
+            <button disabled title="moveButton4P1" data-toggle="tooltip" data-placement="top" title="moveButton4" id="moveButton4"
+              style="width: 25%;">
+              <h6 id="moveName4P1">Movimiento 4</h6>
+              <div class="row justify-content-md-between m-0" style="font-size: .55rem;">
+                <div class="col-4 m-0 p-0" id="moveP1power4">Power</div>
+                <div class="col-4 m-0 p-0" id="moveP1accur4">Accuracy</div>
+              </div>
+            </button>
+            <!-- </div> -->
+
+          </div>
+          <div class="row justify-content-md-center border border-dark m-0 p-0" id="leftBottom2">
+          <!-- End of Moves -->
+          <div class="row">
+            <h4 style="color:maroon; margin-left: 2%">Movimientos del Pokemon 2</h4>
+            <div class="content">
+            	<h4 id="valorP2" style="color:maroon;">Valor:</h4>
+            </div>
+          </div>
+
+          <!-- Start of Moves -->
+          <div class="row justify-content-md-around m-0 p-0">
+
+            <!-- Move 1 -->
+            <!-- <div class="col"> -->
+            <button disabled id="moveButton1P2" data-toggle="tooltip" data-placement="top" title="Test text" style="width: 25%;">
+              <h6 id="moveName1P2">Movimiento 1</h6>
+              <div class="row justify-content-md-between m-0" style="font-size: .55rem;">
+                <div class="col-4 m-0 p-0" id="moveP1power1">Power</div>
+                <div class="col-4 m-0 p-0" id="moveP1accur1">Accuracy</div>
+              </div>
+            </button>
+            <!-- </div> -->
+
+            <!-- Move 2 -->
+            <!-- <div class="col"> -->
+            <button disabled id="moveButton2P2" data-toggle="tooltip" data-placement="top" title="moveButton2" style="width: 25%;">
+              <h6 id="moveName2P2">Movimiento 2</h6>
+              <div class="row justify-content-md-between m-0" style="font-size: .55rem;">
+                <div class="col-4 m-0 p-0" id="moveP1power2">Power</div>
+                <div class="col-4 m-0 p-0" id="moveP1power2">Accuracy</div>
+              </div>
+            </button>
+            <!-- </div> -->
+
+            <!-- Move 3 -->
+            <!-- <div class="col"> -->
+            <button disabled title="moveButton3P2" data-toggle="tooltip" data-placement="top" title="moveButton3" id="moveButton3"
+              style="width: 25%;">
+              <h6 id="moveName3P2">Movimiento 3</h6>
+              <div class="row justify-content-md-between m-0" style="font-size: .55rem;">
+                <div class="col-4 m-0 p-0" id="moveP1power3">Power</div>
+                <div class="col-4 m-0 p-0" id="moveP1accur3">Accuracy</div>
+              </div>
+            </button>
+            <!-- </div> -->
+
+            <!-- Move 4 -->
+            <!-- <div class="col"> -->
+            <button disabled title="moveButton4P2" data-toggle="tooltip" data-placement="top" title="moveButton4" id="moveButton4"
+              style="width: 25%;">
+              <h6 id="moveName4P2">Movimiento 4</h6>
+              <div class="row justify-content-md-between m-0" style="font-size: .55rem;">
+                <div class="col-4 m-0 p-0" id="moveP1power4">Power</div>
+                <div class="col-4 m-0 p-0" id="moveP1accur4">Accuracy</div>
+              </div>
+            </button>
+            <!-- </div> -->
+
+          </div>
+          
+          <!-- End of Moves -->
+
+          <div class="row" style="margin: 1%;"></div>
+
+          <!-- <div class="row">
+            <h4 style="color: royalblue; margin-left: 2%;">Switch</h4>
+          </div>
+          <div class="row justify-content-md-around m-0 p-0" id="switchContainer">
+            <button id="chara1" style="width: 16%;">Char 1</button>
+            <button id="chara2" style="width: 16%;">Char 2</button>
+            <button id="chara3" style="width: 16%;">Char 3</button>
+            <button id="chara4" style="width: 16%;">Char 4 </button>
+            <button id="chara5" style="width: 16%;">Char 5</button>
+            <button id="chara6" style="width: 16%;">Char 6</button>
+          </div>
+          <div class="row" style="margin: 1%;"></div> -->
+		</div>
+        </div>
+        <!-- End of Left Bottom -->
+
+        <!-- ////////////////////////////////////////////////////////////////////////////// -->
+
+      </div>
+      <!-- End of Left Column -->
+
+      <!-- ////////////////////////////////////////////////////////////////////////////// -->
+
+      <!-- Start of Sidebar -->
+      <div class="sideBar col-lg-5 col-sm-4 border border-dark m-0 p-0">
+        <h3 class="turnCount">Turn Counter</h3>
+        <div class="turnContent">Waiting for battle to start!</div>
+      </div>         
+      <!-- End of Sidebar -->
+
+      <!-- ////////////////////////////////////////////////////////////////////////////// -->
+
+        <!-- ////////////////////////////////////////////////////////////////////////////// -->
+
+      </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:jersey="http://www.mulesoft.org/schema/mule/jersey" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ajax="http://www.mulesoft.org/schema/mule/ajax" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ajax http://www.mulesoft.org/schema/mule/ajax/current/mule-ajax.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jersey http://www.mulesoft.org/schema/mule/jersey/current/mule-jersey.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <ajax:connector name="Ajax" serverUrl="http://localhost:8081" resourceBase="src/main/app/docroot" jsonCommented="true" doc:name="Ajax"/>
+    <http:request-config name="HTTP_Request_Configuration" host="pokeapi.co/api/v2/pokemon" port="443" doc:name="HTTP Request Configuration" protocol="HTTPS"/>
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8082" doc:name="HTTP Listener Configuration"/>
+    <flow name="trabajomonstrualFlow">
+        <ajax:inbound-endpoint channel="/services/echo" connector-ref="Ajax" responseTimeout="10000" doc:name="Ajax"/>
+        <set-payload value="#[message.payload]" doc:name="Set Payload"/>
+    </flow>
+</mule>
