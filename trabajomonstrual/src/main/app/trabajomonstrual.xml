@@ -15,5 +15,6 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     <flow name="trabajomonstrualFlow">
         <ajax:inbound-endpoint channel="/services/echo" connector-ref="Ajax" responseTimeout="10000" doc:name="Ajax"/>
         <set-payload value="#[message.payload]" doc:name="Set Payload"/>
+        <echo-component doc:name="Echo"/>
     </flow>
 </mule>
