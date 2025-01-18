@@ -89,7 +89,7 @@ public class consultarPokemons implements Callable {
         
         JSONObject simplifiedData = new JSONObject();
         simplifiedData.put("name", pokemonData.getString("name"));
-        simplifiedData.put("base_experience", pokemonData.getInt("base_experience"));
+        //simplifiedData.put("base_experience", pokemonData.getInt("base_experience"));
         
         // Get HP stat
         /*JSONArray stats = pokemonData.getJSONArray("stats");
