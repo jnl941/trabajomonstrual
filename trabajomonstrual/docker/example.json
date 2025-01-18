@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "pokemon1": {
+            "type": "string"
+        },
+        "pokemon2": {
+            "type": "string"
+        },
+        "movimientoP1": {
+            "type": "string"
+        },
+        "movimientoP2": {
+            "type": "string"
+        },
+        "danyoMovimientoPokemon1": {
+            "type": "number"
+        },
+        "danyoMovimientoPokemon2": {
+            "type": "number"
+        },
+        "ganador": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "pokemon1",
+        "pokemon2",
+        "movimientoP1",
+        "movimientoP2",
+        "danyoMovimientoPokemon1",
+        "danyoMovimientoPokemon2",
+        "ganador"
+    ]
+}

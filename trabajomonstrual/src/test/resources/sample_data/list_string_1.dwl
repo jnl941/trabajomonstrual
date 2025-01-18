@@ -1,0 +1,10 @@
+%dw 1.0
+%output application/java
+---
+{
+	pokemon1: "????",
+	pokemon2: "????",
+	danyoMovimientoPokemon1: "????"
+	
+	
+}

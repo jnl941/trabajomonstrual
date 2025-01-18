@@ -1,0 +1,94 @@
+{
+    "queues": [
+        {
+            "name": "DrawsQueue",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic"
+            }
+        },
+        {
+            "name": "WinnersQueue",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic"
+            }
+        },
+        {
+            "name": "LosersQueue",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic"
+            }
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "externally_configured_exchange",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+        {
+            "source": "externally_configured_exchange",
+            "vhost": "/",
+            "destination": "DrawsQueue",
+            "destination_type": "queue",
+            "routing_key": "DrawsQueue",
+            "arguments": {}
+        },
+        {
+            "source": "externally_configured_exchange",
+            "vhost": "/",
+            "destination": "WinnersQueue",
+            "destination_type": "queue",
+            "routing_key": "WinnersQueue",
+            "arguments": {}
+        },
+        {
+            "source": "externally_configured_exchange",
+            "vhost": "/",
+            "destination": "LosersQueue",
+            "destination_type": "queue",
+            "routing_key": "LosersQueue",
+            "arguments": {}
+        }
+    ],
+
+    "users": [
+        {
+          "name": "guest",
+          "password_hash": "BMfxN8drrYcIqXZMr+pWTpDT0nMcOagMduLX0bjr4jwud/pN",
+          "hashing_algorithm": "rabbit_password_hashing_sha256",
+          "tags": [
+            "administrator"
+          ],
+          "limits": {}
+        }
+    ],
+    "vhosts": [
+        {
+          "name": "/"
+        }
+    ],
+    "permissions": [
+        {
+          "user": "guest",
+          "vhost": "/",
+          "configure": ".*",
+          "write": ".*",
+          "read": ".*"
+        }
+    ]
+}

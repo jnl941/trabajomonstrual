@@ -1,0 +1,22 @@
+{
+    "inputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "array"
+        },
+        "flowVariables": {
+            "timeNow": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "timeNow"
+            }
+        }
+    },
+    "outputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "xmlWin"
+        }
+    },
+    "id": "90f515f7-883f-49d5-a3c0-75a5b80f20d6",
+    "version": "5.2.0.0"
+}

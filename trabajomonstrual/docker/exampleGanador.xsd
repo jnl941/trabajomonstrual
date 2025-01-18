@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <!-- Root element -->
+  <xs:element name="PokemonBattleGanador">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PokemonGanador" type="xs:string" />
+        <xs:element name="MovimientoGanador" type="xs:string" />
+        <xs:element name="DanyoMovimientoGanador" type="xs:decimal" />
+        <xs:element name="Timestamp" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <!-- Root element -->
+  <xs:element name="PokemonBattle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BattleDetails" type="battleDetails" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Complex type for BattleDetails -->
+  <xs:complexType name="battleDetails">
+    <xs:sequence>
+      <xs:element name="Pokemon1" type="xs:string" />
+      <xs:element name="Pokemon2" type="xs:string" />
+      <xs:element name="MovimientoP1" type="xs:string" />
+      <xs:element name="MovimientoP2" type="xs:string" />
+      <xs:element name="DanyoMovimientoPokemon1" type="xs:decimal" />
+      <xs:element name="DanyoMovimientoPokemon2" type="xs:decimal" />
+      <xs:element name="Timestamp" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

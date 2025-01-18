@@ -5,7 +5,7 @@ body {
     background: rgb(244, 250, 248);
     z-index: -2;
     height: 100vh;
-    /* background-image: url(https://www.imgbase.info/images/safe-wallpapers/anime/pokemon/41394_pokemon.jpg) */
+    background-image: url('https://play.pokemonshowdown.com/fx/client-bg-horizon.jpg');
 }
 .content {
   background: white;
@@ -21,10 +21,16 @@ body {
     padding: 0px;
     width: 100%;
     z-index: 0;
+    background-image: url('trabajomonstrualbackground\ -\ Up.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
 }
 
 #leftBottom {
     height: 30%;
+    background-color: rgb(244, 250, 248);
 }
 
 .row {
@@ -42,17 +48,20 @@ body {
 }
 
 #enemyZone {
-    height: 30%;
-    width: 100%;
+    height: -25%;
+    transform: translate(-5%,80%);
+    width: 95%;
 }
 
 #neutralZone {
-    height: 10%;
+    height: 0%;
     width: 100%;
 }
 
 #playerZone {
-    height: 30%;
+    right: 20%;
+    height: 15%;
+    transform: translate(4%,85%);
     width: 100%;
 }
 
@@ -63,17 +72,6 @@ body {
     z-index: 2;
     bottom: 20%;
     /* border: solid orange; */
-}
-
-#playerPokemon{
-    width: 100%;
-    height: 100%;
-    position: relative;
-    z-index: 1;
-    /* border: solid blue; */
-    display: flex;
-    justify-content: center;
-    align-items:flex-end ;
 }
 
 #enemyPokemonFront {
@@ -116,14 +114,19 @@ body {
 }
 /* Pokemon Name, Health, Status */
 #playerPokemon1Name{
-    height: 20%;
+    height: 24%;
     text-align: left;
     display: block;
-    font-size: .8em;
-    color: Yellow;
+    font-size: 1em;
+    transform: translate(-47%,-500%);
+    color: white;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+    font-weight: bold;
 }
+
 #playerPokemon1HealthBar {
     height: 20%;
+    visibility: hidden;
 }
 #playerPokemon1HealthBar progress {
     -webkit-appearance: none;
@@ -131,6 +134,7 @@ body {
     appearance: none;
     width: 100%;
     height: 100%;
+    visibility: hidden;
 }
 #playerPokemon1Health{
     background-color: #CC0000 !important;
@@ -147,12 +151,15 @@ body {
 #p1HP{
     display: block;
     text-align: left;
+    visibility: hidden;
 }
 .health-value  {
     width: 100%;
     height: 100%;
     font-size: .8em;
-    color: Yellow;
+    color: white;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+    font-weight: bold;
 }
 #playerPokemonStatusEffect {
     height: 10%;
@@ -168,13 +175,17 @@ body {
 #enemyPokemon1Name{
     height: 20%;
     width: 100%;
-    font-size: .8em;
+    transform: translate(50%,-150%);
+    font-size: 1em;
     text-align: right;
     display: block;
-    color: Yellow;
+    color: white;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+    font-weight: bold;
 }
 #enemyPokemon1HealthBar {
     height: 20%;
+    visibility: hidden;
 }
 #enemyPokemon1HealthBar progress {
     -webkit-appearance: none;
@@ -182,19 +193,23 @@ body {
     appearance: none;
     width: 100%;
     height: 100%;
+    visibility: hidden;
 }
 #enemyPokemon1HealthBar progress::-webkit-progress-bar {
     background: #EEE;
     box-shadow: 0 2px 3px rgba(0,0,0,0.2) inset;
     border-radius: 3px;
+    visibility: hidden;
 }
 #enemyPokemon1HealthBar progress::-webkit-progress-value {
     background-color: #CC0000;
     border-radius: 3px;
+    visibility: hidden;
 }
 #enemyPokemon1HealthBar -moz-progress-bar {
     background-color: #CC0000;
     border-radius: 3px;
+    visibility: hidden;
 }
 .health-value{
     width: 100%;
@@ -514,3 +529,169 @@ nav {
     height: 50em;
     overflow-y: scroll; 
 } */
+
+.pokemon-sprite {
+    max-width: 150px;
+    max-height: 150px;
+    width: auto;
+    height: auto;
+    image-rendering: pixelated;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+#playerPokemon {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+#enemyPokemon {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.pokemon-selection {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+}
+
+.form-group label {
+    font-weight: bold;
+    color: #333;
+}
+
+#searchStatus {
+    color: #666;
+    font-style: italic;
+}
+
+#lucharButton {
+    transition: all 0.3s ease;
+}
+
+#lucharButton:disabled {
+    opacity: 0.6;
+}
+
+#lucharButton:not(:disabled):hover {
+    transform: scale(1.05);
+}
+
+.highlight-move {
+    animation: pulse 0.5s infinite;
+    background-color: var(--highlight-color, #ffd700);
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
+.selected-move {
+    animation: selectedPulse 1s infinite;
+    background-color: var(--highlight-color, #ffd700);
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px var(--highlight-color, #ffd700);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--highlight-color, 255, 215, 0), 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(var(--highlight-color, 255, 215, 0), 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--highlight-color, 255, 215, 0), 0);
+    }
+}
+
+@keyframes selectedPulse {
+    0% {
+        box-shadow: 0 0 5px var(--highlight-color, #ffd700);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--highlight-color, #ffd700);
+    }
+    100% {
+        box-shadow: 0 0 5px var(--highlight-color, #ffd700);
+    }
+}
+
+.move-collision {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    height: 100px;
+}
+
+.move {
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    transition: all 0.5s ease;
+    position: absolute;
+    background: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.move1 {
+    left: 0;
+    background: linear-gradient(45deg, #4CAF50, #81C784);
+    color: white;
+}
+
+.move2 {
+    right: 0;
+    background: linear-gradient(45deg, #2196F3, #64B5F6);
+    color: white;
+}
+
+.move1-collide {
+    animation: collide-left 1.5s forwards;
+}
+
+.move2-collide {
+    animation: collide-right 1.5s forwards;
+}
+
+@keyframes collide-left {
+    0% { transform: translateX(0); }
+    40% { transform: translateX(calc(50% - 10px)); }
+    50% { transform: translateX(calc(45% - 10px)) scale(1.1); }
+    100% { transform: translateX(calc(50% - 10px)) scale(1); }
+}
+
+@keyframes collide-right {
+    0% { transform: translateX(0); }
+    40% { transform: translateX(calc(-50% + 10px)); }
+    50% { transform: translateX(calc(-45% + 10px)) scale(1.1); }
+    100% { transform: translateX(calc(-50% + 10px)) scale(1); }
+}
+
+.input-group .btn-outline-secondary {
+    border-color: #ced4da;
+    color: #6c757d;
+}
+
+.input-group .btn-outline-secondary:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.btn-outline-primary {
+    margin: 10px 0;
+}
+
+.fa-dice {
+    margin-left: 5px;
+}
