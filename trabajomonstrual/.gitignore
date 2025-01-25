@@ -15,7 +15,6 @@
 .metadata
 docker/rabbitmq_data/**
 docker/pg_data/**
-logs/**
 bin/**
 tmp/**
 tmp/**/*
