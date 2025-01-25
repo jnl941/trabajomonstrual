@@ -59,7 +59,7 @@
 			document.getElementById('searchStatus').innerHTML = errorMessage.replace('\n', '<br>');
 			document.getElementById('searchStatus').classList.add('text-danger');
 		} else {
-			document.getElementById('searchStatus').innerHTML = '¡Pokemon encontrados!';
+			document.getElementById('searchStatus').innerHTML = 'Â¡Pokemon encontrados!';
 			document.getElementById('searchStatus').classList.remove('text-danger');
 		}
 		
@@ -197,7 +197,7 @@ function resetBattleField() {
     // Clear search inputs and status
     document.getElementById('pokemon1Input').value = '';
     document.getElementById('pokemon2Input').value = '';
-    document.getElementById('searchStatus').innerHTML = 'Esperando selección de Pokemon...';
+    document.getElementById('searchStatus').innerHTML = 'Esperando selecciÃ³n de Pokemon...';
     
     // Reset Pokemon found status
     pokemon1Found = false;
@@ -357,7 +357,7 @@ function showMoveCollision(pokemon1, pokemon2, move1Index, move2Index) {
             let result;
             if (valor1 === valor2) {
                 result = {
-                    message: `¡Empate! Ambos ataques tienen el mismo valor (${valor1})`,
+                    message: `Â¡Empate! Ambos ataques tienen el mismo valor (${valor1})`,
                     winner: null
                 };
             } else {
@@ -365,7 +365,7 @@ function showMoveCollision(pokemon1, pokemon2, move1Index, move2Index) {
                     { pokemon: pokemon1, move: move1, position: "(1)" } : 
                     { pokemon: pokemon2, move: move2, position: "(2)" };
                 result = {
-                    message: `¡${winner.pokemon.name} ${winner.position} ganó usando ${winner.move.name}!<br>
+                    message: `Â¡${winner.pokemon.name} ${winner.position} ganÃ³ usando ${winner.move.name}!<br>
                              (Valor del ataque: ${winner.move.power * winner.move.accuracy})`,
                     winner: winner
                 };
@@ -691,7 +691,7 @@ function showMoveCollision(pokemon1, pokemon2, move1Index, move2Index) {
 
       <!-- Start of Sidebar -->
       <div class="sideBar col-lg-5 col-sm-4 border border-dark m-0 p-0">
-        <h3 class="turnCount">Selección de Pokemons</h3>
+        <h3 class="turnCount">SelecciÃ³n de Pokemons</h3>
         <div class="turnContent">
             <!-- Pokemon Selection Form -->
             <div class="pokemon-selection p-3">
@@ -710,12 +710,12 @@ function showMoveCollision(pokemon1, pokemon2, move1Index, move2Index) {
                 <button class="btn btn-warning w-100 mb-3" onclick="iniciarBatallaAleatoria()">Batalla Aleatoria</button>
                 
                 <button class="btn btn-success w-100" id="lucharButton" onclick="luchar()" disabled>
-                    ¡Luchar!
+                    Â¡Luchar!
                 </button>
             </div>
             
             <div id="searchStatus" class="text-center mt-3">
-                Esperando a la selección de Pokemons...
+                Esperando a la selecciÃ³n de Pokemons...
             </div>
         </div>
     </div>       

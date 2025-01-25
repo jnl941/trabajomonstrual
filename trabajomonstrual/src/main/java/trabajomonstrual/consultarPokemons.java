@@ -6,6 +6,10 @@ import org.mule.api.MuleMessage;
 import org.mule.api.transport.PropertyScope;
 import org.mule.transport.http.HttpResponse;
 import org.mule.transport.http.HttpRequest;
+import org.mule.module.http.internal.ParameterMap;
+import org.mule.module.client.MuleClient;
+import org.mule.DefaultMuleMessage;
+import org.mule.transport.ajax.embedded.AjaxConnector;
 
 import org.json.JSONObject;
 import java.io.InputStreamReader;
@@ -18,6 +22,8 @@ import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.apache.log4j.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 public class consultarPokemons implements Callable {
     private static final Logger logger = Logger.getLogger(consultarPokemons.class);
@@ -27,23 +33,93 @@ public class consultarPokemons implements Callable {
         MuleMessage message = eventContext.getMessage();
         String payloadStr = message.getPayloadAsString();
         
-        // logger.info("Received payload: " + payloadStr);
+        // Get luchar parameter from query string, default to true if not present
+        Object queryParams = message.getInboundProperty("http.query.params");
+        boolean shouldBattle = false; // default value
+        
+        if (queryParams != null) {
+            if (queryParams instanceof ParameterMap) {
+                ParameterMap paramMap = (ParameterMap) queryParams;
+                String lucharParam = paramMap.get("luchar");
+                if (lucharParam != null) {
+                    shouldBattle = Boolean.parseBoolean(lucharParam);
+                }
+            }
+        }
         
         JSONObject payload = new JSONObject(payloadStr);
+        
+        if (!shouldBattle) {
+            // Existing pokemon data fetch logic
+            return handlePokemonDataFetch(payload);
+        } else {
+            // Battle logic
+            String pokemon1Name = payload.getString("pokemon1");
+            String pokemon2Name = payload.getString("pokemon2");
+            
+            JSONObject pokemon1Data = getPokemonData(pokemon1Name);
+            JSONObject pokemon2Data = getPokemonData(pokemon2Name);
+            
+            // Get random moves
+            Random random = new Random();
+            int move1Index = random.nextInt(4);
+            int move2Index = random.nextInt(4);
+            
+            JSONArray moves1 = pokemon1Data.getJSONArray("moves");
+            JSONArray moves2 = pokemon2Data.getJSONArray("moves");
+            
+            JSONObject move1 = moves1.getJSONObject(move1Index);
+            JSONObject move2 = moves2.getJSONObject(move2Index);
+            
+            // Calculate battle values
+            int valor1 = (move1.optInt("power", 0)) * (move1.optInt("accuracy", 1));
+            int valor2 = (move2.optInt("power", 0)) * (move2.optInt("accuracy", 1));
+            
+            // Determine winner
+            String winner;
+            if (valor1 == valor2) {
+                winner = "empate";
+            } else {
+                winner = valor1 > valor2 ? pokemon1Name + " (1)" : pokemon2Name + " (2)";
+            }
+            
+            // Create battle result
+            JSONObject battleResult = new JSONObject();
+            battleResult.put("pokemon1", pokemon1Name + " (1)");
+            battleResult.put("pokemon2", pokemon2Name + " (2)");
+            battleResult.put("movimientoP1", move1.getString("name"));
+            battleResult.put("movimientoP2", move2.getString("name"));
+            battleResult.put("danyoMovimientoPokemon1", valor1);
+            battleResult.put("danyoMovimientoPokemon2", valor2);
+            battleResult.put("ganador", winner);
+            battleResult.put("selectedMoveIndex1", move1Index);
+            battleResult.put("selectedMoveIndex2", move2Index);
+            
+            // Create battle data for recording
+            JSONObject battleData = new JSONObject();
+            battleData.put("pokemon1", pokemon1Name + " (1)");
+            battleData.put("pokemon2", pokemon2Name + " (2)");
+            battleData.put("movimientoP1", move1.getString("name"));
+            battleData.put("movimientoP2", move2.getString("name"));
+            battleData.put("danyoMovimientoPokemon1", valor1);
+            battleData.put("danyoMovimientoPokemon2", valor2);
+            battleData.put("ganador", winner);
+            
+            // Return the battle result
+            return battleResult.toString();
+        }
+    }
+
+    private String handlePokemonDataFetch(JSONObject payload) throws Exception {
         JSONObject response = new JSONObject();
         
-        // Get Pokemon names from the payload
         String pokemon1 = payload.getString("pokemon1");
         String pokemon2 = payload.getString("pokemon2");
         
-        // logger.info("Fetching data for Pokemon: " + pokemon1 + " and " + pokemon2);
-        
-        // Try to get data for both Pokemon
         try {
             JSONObject pokemon1Data = getPokemonData(pokemon1);
             response.put("pokemon1", pokemon1Data);
         } catch (IOException e) {
-            // logger.error("Pokemon not found: " + pokemon1);
             response.put("error_pokemon1", "Pokemon not found: " + pokemon1);
         }
         
@@ -51,11 +127,9 @@ public class consultarPokemons implements Callable {
             JSONObject pokemon2Data = getPokemonData(pokemon2);
             response.put("pokemon2", pokemon2Data);
         } catch (IOException e) {
-            // logger.error("Pokemon not found: " + pokemon2);
             response.put("error_pokemon2", "Pokemon not found: " + pokemon2);
         }
         
-        // logger.info("Sending response: " + response.toString());
         return response.toString();
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:wmq="http://www.mulesoft.org/schema/mule/ee/wmq" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ajax="http://www.mulesoft.org/schema/mule/ajax" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:wmq="http://www.mulesoft.org/schema/mule/ee/wmq" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ajax="http://www.mulesoft.org/schema/mule/ajax" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -15,7 +15,8 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/ajax http://www.mulesoft.org/schema/mule/ajax/current/mule-ajax.xsd
 http://www.mulesoft.org/schema/mule/ee/wmq http://www.mulesoft.org/schema/mule/ee/wmq/current/mule-wmq-ee.xsd
 http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
-http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd">
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
     <ajax:connector name="Ajax" serverUrl="http://localhost:8082" resourceBase="src/main/app/docroot" jsonCommented="true" doc:name="Ajax"/>
     <http:listener-config name="HTTP_Listener_Configuration" host="localhost" port="8081" doc:name="HTTP Listener Configuration"/>
     <db:generic-config name="PostgreSQL_Configuration" url="jdbc:postgresql://localhost:5434/monstrualdb?user=monstrual&amp;password=example" 
@@ -26,6 +27,7 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
     <file:connector name="File" autoDelete="true" outputAppend="true" streaming="true" validateConnections="true" doc:name="File"/>
     <http:request-config name="HTTP_Request_Configuration" host="localhost" port="8081" doc:name="HTTP Request Configuration"/>
     <file:connector name="File1" autoDelete="true" streaming="true" validateConnections="true" doc:name="File"/>
+    <vm:connector name="VM" validateConnections="true" doc:name="VM"/>
     <flow name="trabajomonstrualFlow">
         <ajax:inbound-endpoint channel="/services/echo" connector-ref="Ajax" responseTimeout="10000" doc:name="Ajax"/>
         <set-payload value="#[message.payload]" doc:name="Set Payload"/>
@@ -42,6 +44,11 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
             <when expression="#[message.inboundProperties.'http.request.path'.contains(&quot;registroDeBatalla&quot;)]">
                 <component class="trabajomonstrual.consultarPokemons" doc:name="Get Pokemon Data"/>
                 <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <choice doc:name="Check luchar parameter">
+                    <when expression="#[message.inboundProperties.'http.query.params'.luchar != 'false']">
+                        <vm:outbound-endpoint exchange-pattern="one-way" path="recordBattle" connector-ref="VM" doc:name="VM"/>
+                    </when>
+                </choice>
             </when>
             <when expression="#[message.inboundProperties.'http.request.path'.contains(&quot;logs&quot;)]">
                 <component class="trabajomonstrual.consultarLogs" doc:name="Get Log Data"/>
@@ -73,8 +80,9 @@ LIMIT 1;]]></db:parameterized-query>
         <scatter-gather doc:name="Scatter-Gather">
             <processor-chain>
                 <json:object-to-json-transformer doc:name="Object to JSON"/>
-                <db:bulk-execute config-ref="PostgreSQL_Configuration" doc:name="Create Table Batallas"><![CDATA[
-            CREATE TABLE IF NOT EXISTS Batallas (
+                <scatter-gather doc:name="Scatter-Gather">
+                    <threading-profile maxThreadsActive="1" poolExhaustedAction="RUN"/>
+                    <db:bulk-execute config-ref="PostgreSQL_Configuration" doc:name="Create Table Batallas"><![CDATA[CREATE TABLE IF NOT EXISTS Batallas (
                 id SERIAL PRIMARY KEY,
                 pokemon1 VARCHAR(100),
                 pokemon2 VARCHAR(100),
@@ -82,13 +90,9 @@ LIMIT 1;]]></db:parameterized-query>
                 danyoMovimientoPokemon2 INTEGER,
                 ganador VARCHAR(100),
                 timestamp VARCHAR(20)
-            )
-        ]]></db:bulk-execute>
-            </processor-chain>
-            <processor-chain>
-                <json:object-to-json-transformer doc:name="Object to JSON"/>
-                <db:insert config-ref="PostgreSQL_Configuration" doc:name="Record Battle Result">
-                    <db:parameterized-query><![CDATA[INSERT INTO Batallas (
+            );]]></db:bulk-execute>
+                    <db:insert config-ref="PostgreSQL_Configuration" doc:name="Record Table Batallas">
+                        <db:parameterized-query><![CDATA[INSERT INTO Batallas (
                     pokemon1, 
                     pokemon2, 
                     danyoMovimientoPokemon1, 
@@ -103,8 +107,232 @@ LIMIT 1;]]></db:parameterized-query>
                     #[json:danyoMovimientoPokemon2], 
                     #[json:ganador],
                     #[flowVars.timeNow]
-                )]]></db:parameterized-query>
-                </db:insert>
+                );]]></db:parameterized-query>
+                    </db:insert>
+                </scatter-gather>
+            </processor-chain>
+            <choice doc:name="Choice">
+                <when expression="#[message.payload.ganador == message.payload.pokemon2]">
+                    <scatter-gather doc:name="Scatter-Gather Win P2">
+                        <processor-chain>
+                            <dw:transform-message metadata:id="db5d97ef-9f77-4824-baa0-74cbd321158d" doc:name="Transform Winner P2">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	danyoMovimientoPokemon2: payload.danyoMovimientoPokemon2,
+	movimientoP2: payload.movimientoP2,
+	pokemon2: payload.pokemon2
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <amqp:outbound-endpoint queueName="WinnersQueue" responseTimeout="10000" exchange-pattern="request-response" connector-ref="AMQP_0_9_Connector" doc:name="AMQP-0-9"/>
+                        </processor-chain>
+                        <processor-chain>
+                            <dw:transform-message metadata:id="c679d1c3-acee-4abf-a432-def0bcf6fe42" doc:name="Transform Loser P1">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	danyoMovimientoPokemon1: payload.danyoMovimientoPokemon1,
+	movimientoP1: payload.movimientoP1,
+	pokemon1: payload.pokemon1
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <amqp:outbound-endpoint queueName="LosersQueue" responseTimeout="10000" exchange-pattern="request-response" connector-ref="AMQP_0_9_Connector1" doc:name="AMQP-0-9"/>
+                        </processor-chain>
+                        <processor-chain>
+                            <dw:transform-message metadata:id="90f515f7-883f-49d5-a3c0-75a5b80f20d6" doc:name="Transform Winner XML P2">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:input-variable mimeType="application/java" variableName="timeNow"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	PokemonBattleGanador: {
+		PokemonGanador: payload.pokemon2,
+		MovimientoGanador: payload.movimientoP2,
+		DanyoMovimientoGanador: payload.danyoMovimientoPokemon2,
+		Timestamp: flowVars.timeNow
+	}
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <file:outbound-endpoint path="C:\Users\JaviNL\git\trabajomonstrual\logs" outputPattern="logsGanadores.xml" connector-ref="File" responseTimeout="10000" doc:name="Save Winners Log"/>
+                        </processor-chain>
+                        <processor-chain>
+                            <dw:transform-message metadata:id="a068d8fe-83d6-4bdb-ae19-b8a52de10207" doc:name="Transform Loser XML P1">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:input-variable mimeType="application/java" variableName="timeNow"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	PokemonBattlePerdedor: {
+		PokemonPerdedor: payload.pokemon1,
+		MovimientoPerdedor: payload.movimientoP1,
+		DanyoMovimientoPerdedor: payload.danyoMovimientoPokemon1,
+		Timestamp: flowVars.timeNow
+	}
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <file:outbound-endpoint path="C:\Users\JaviNL\git\trabajomonstrual\logs" outputPattern="logsPerdedores.xml" connector-ref="File" responseTimeout="10000" doc:name="Save Losers Log"/>
+                        </processor-chain>
+                    </scatter-gather>
+                </when>
+                <when expression="#[message.payload.ganador == message.payload.pokemon1]">
+                    <scatter-gather doc:name="Scatter-Gather Win P1">
+                        <processor-chain>
+                            <dw:transform-message metadata:id="c679d1c3-acee-4abf-a432-def0bcf6fe42" doc:name="Transform Winner P1">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	danyoMovimientoPokemon1: payload.danyoMovimientoPokemon1,
+	movimientoP1: payload.movimientoP1,
+	pokemon1: payload.pokemon1
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <amqp:outbound-endpoint queueName="WinnersQueue" responseTimeout="10000" exchange-pattern="request-response" connector-ref="AMQP_0_9_Connector" doc:name="AMQP-0-9"/>
+                        </processor-chain>
+                        <processor-chain>
+                            <dw:transform-message metadata:id="db5d97ef-9f77-4824-baa0-74cbd321158d" doc:name="Transform Loser P2">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	danyoMovimientoPokemon2: payload.danyoMovimientoPokemon2,
+	movimientoP2: payload.movimientoP2,
+	pokemon2: payload.pokemon2
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <amqp:outbound-endpoint queueName="LosersQueue" responseTimeout="10000" exchange-pattern="request-response" connector-ref="AMQP_0_9_Connector1" doc:name="AMQP-0-9"/>
+                        </processor-chain>
+                        <processor-chain>
+                            <dw:transform-message metadata:id="90f515f7-883f-49d5-a3c0-75a5b80f20d6" doc:name="Transform Winner XML P1">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:input-variable mimeType="application/java" variableName="timeNow"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	PokemonBattleGanador: {
+		PokemonGanador: payload.pokemon1,
+		MovimientoGanador: payload.movimientoP1,
+		DanyoMovimientoGanador: payload.danyoMovimientoPokemon1,
+		Timestamp: flowVars.timeNow
+	}
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <file:outbound-endpoint path="C:\Users\JaviNL\git\trabajomonstrual\logs" outputPattern="logsGanadores.xml" connector-ref="File" responseTimeout="10000" doc:name="Save Winners Log"/>
+                        </processor-chain>
+                        <processor-chain>
+                            <dw:transform-message metadata:id="a068d8fe-83d6-4bdb-ae19-b8a52de10207" doc:name="Transform Loser XML P2">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:input-variable mimeType="application/java" variableName="timeNow"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	PokemonBattlePerdedor: {
+		PokemonPerdedor: payload.pokemon2,
+		MovimientoPerdedor: payload.movimientoP2,
+		DanyoMovimientoPerdedor: payload.danyoMovimientoPokemon2,
+		Timestamp: flowVars.timeNow
+	}
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <file:outbound-endpoint path="C:\Users\JaviNL\git\trabajomonstrual\logs" outputPattern="logsPerdedores.xml" connector-ref="File" responseTimeout="10000" doc:name="Save Losers Log"/>
+                        </processor-chain>
+                    </scatter-gather>
+                </when>
+                <when expression="#[message.payload.ganador == 'empate']">
+                    <scatter-gather doc:name="Scatter-Gather Draw">
+                        <processor-chain>
+                            <dw:transform-message metadata:id="da3608b2-aa27-4d88-b3e9-e11b6e992dcf" doc:name="Transform Draw">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:input-variable variableName="timeNow"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	danyoMovimientoPokemon1: payload.danyoMovimientoPokemon1,
+	pokemon1: payload.pokemon1,
+	pokemon2: payload.pokemon2
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <amqp:outbound-endpoint queueName="DrawsQueue" responseTimeout="10000" exchange-pattern="request-response" connector-ref="AMQP_0_9_Connector" doc:name="AMQP-0-9"/>
+                        </processor-chain>
+                        <processor-chain>
+                            <dw:transform-message metadata:id="5536e178-c053-4998-8db2-a68899c021ab" doc:name="Transform Draw XML">
+                                <dw:input-payload mimeType="application/java"/>
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+---
+{
+	PokemonBattle: {
+		BattleDetails: {
+			Pokemon1: payload.pokemon1,
+			Pokemon2: payload.pokemon2,
+			MovimientoP1: payload.movimientoP1,
+			MovimientoP2: payload.movimientoP2,
+			DanyoMovimientoPokemon1: payload.danyoMovimientoPokemon1,
+			DanyoMovimientoPokemon2: payload.danyoMovimientoPokemon2,
+			Timestamp: flowVars.timeNow
+		}
+	}
+}]]></dw:set-payload>
+                            </dw:transform-message>
+                            <file:outbound-endpoint path="C:\Users\JaviNL\git\trabajomonstrual\logs" outputPattern="logsEmpates.xml" connector-ref="File" responseTimeout="10000" doc:name="Save Draws Log"/>
+                        </processor-chain>
+                    </scatter-gather>
+                </when>
+            </choice>
+        </scatter-gather>
+        
+        <!-- Parse JSON payload -->
+        
+        <!-- Create table if it doesn't exist -->
+    </flow>
+    <flow name="recordBattleResultFlowNoAJAX">
+        <vm:inbound-endpoint exchange-pattern="one-way"  doc:name="VM" connector-ref="VM" path="recordBattle"/>
+        <set-variable variableName="timeNow" value="#[java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd-HH:mm:ss'))]" doc:name="Variable"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <scatter-gather doc:name="Scatter-Gather">
+            <processor-chain>
+                <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <scatter-gather doc:name="Scatter-Gather">
+                    <threading-profile maxThreadsActive="1" poolExhaustedAction="RUN"/>
+                    <db:bulk-execute config-ref="PostgreSQL_Configuration" doc:name="Create Table Batallas"><![CDATA[CREATE TABLE IF NOT EXISTS Batallas (
+                id SERIAL PRIMARY KEY,
+                pokemon1 VARCHAR(100),
+                pokemon2 VARCHAR(100),
+                danyoMovimientoPokemon1 INTEGER,
+                danyoMovimientoPokemon2 INTEGER,
+                ganador VARCHAR(100),
+                timestamp VARCHAR(20)
+            );]]></db:bulk-execute>
+                    <db:insert config-ref="PostgreSQL_Configuration" doc:name="Record Table Batallas">
+                        <db:parameterized-query><![CDATA[INSERT INTO Batallas (
+                    pokemon1, 
+                    pokemon2, 
+                    danyoMovimientoPokemon1, 
+                    danyoMovimientoPokemon2, 
+                    ganador, 
+                    timestamp
+                ) 
+                VALUES (
+                    #[json:pokemon1],
+                    #[json:pokemon2], 
+                    #[json:danyoMovimientoPokemon1], 
+                    #[json:danyoMovimientoPokemon2], 
+                    #[json:ganador],
+                    #[flowVars.timeNow]
+                );]]></db:parameterized-query>
+                    </db:insert>
+                </scatter-gather>
             </processor-chain>
             <choice doc:name="Choice">
                 <when expression="#[message.payload.ganador == message.payload.pokemon2]">
