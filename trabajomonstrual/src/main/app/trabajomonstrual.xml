@@ -48,6 +48,9 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
                     <when expression="#[message.inboundProperties.'http.query.params'.luchar != 'false']">
                         <vm:outbound-endpoint exchange-pattern="one-way" path="recordBattle" connector-ref="VM" doc:name="VM"/>
                     </when>
+                    <otherwise>
+                        <logger message="Only searching pokemon" level="INFO" doc:name="Logger"/>
+                    </otherwise>
                 </choice>
             </when>
             <when expression="#[message.inboundProperties.'http.request.path'.contains(&quot;logs&quot;)]">
