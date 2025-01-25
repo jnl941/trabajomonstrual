@@ -45,7 +45,7 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
             </when>
             <when expression="#[message.inboundProperties.'http.request.path'.contains(&quot;logs&quot;)]">
                 <component class="trabajomonstrual.consultarLogs" doc:name="Get Log Data"/>
-                <mulexml:object-to-xml-transformer doc:name="Object to XML"/>
+                <component class="trabajomonstrual.xmlToJSON" doc:name="Parse to JSON"/>
             </when>
             <when expression="#[message.inboundProperties.'http.request.path'.contains(&quot;resultadoDeBatalla&quot;)]">
                 <db:select config-ref="PostgreSQL_Configuration" doc:name="Database">

@@ -12,5 +12,6 @@
 	<classpathentry kind="src" path="src/test/munit"/>
 	<classpathentry kind="lib" path="lib/postgresql-42.2.8.jar"/>
 	<classpathentry kind="con" path="MULE_LIB/AMQP-0-9/mule-transport-amqp-contribution"/>
+	<classpathentry kind="con" path="MULE_LIB/AMQPS-0-9/mule-transport-amqp-contribution"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
